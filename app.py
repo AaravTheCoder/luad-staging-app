@@ -198,19 +198,6 @@ if predict_btn:
             Predictions may be less reliable. Ensure gene names use HGNC symbols (e.g. EGFR, KRAS, TP53).
             </div>""", unsafe_allow_html=True)
 
-        # ── Gemini clinical summary ───────────────────────────────────────────
-        summary = gemini_summary(prob, stage, confidence, mode_label, age, sex, smoking, symptoms, history)
-        if summary:
-            st.markdown(f"""
-            <div style="background:#1a1d27;border-left:3px solid #3498db;border-radius:8px;
-                        padding:1rem 1.2rem;margin-top:1rem;color:#ccc;font-size:0.95rem;line-height:1.6">
-                <div style="font-size:0.75rem;color:#3498db;font-weight:bold;margin-bottom:0.4rem">
-                    AI CLINICAL SUMMARY (Gemini)
-                </div>
-                {summary}
-            </div>
-            """, unsafe_allow_html=True)
-
         st.markdown("---")
 
         # ── Metric cards ─────────────────────────────────────────────────────
@@ -282,13 +269,22 @@ if predict_btn:
                     plt.close(fig2)
                     st.caption("Red = pushes toward Stage III/IV · Blue = pushes toward Stage I/II")
 
-        # ── Disclaimer ───────────────────────────────────────────────────────
+        # ── Gemini clinical summary ───────────────────────────────────────────
         st.markdown("---")
-        st.markdown("""<div class="warning-box">
-        ⚠️ <b>Research Use Only.</b> This tool is a proof-of-concept and is NOT a clinical diagnostic tool.
-        It should never be used to make medical decisions.
-        Always consult a qualified oncologist for diagnosis and staging.
-        </div>""", unsafe_allow_html=True)
+        with st.spinner("Generating AI clinical summary..."):
+            summary = gemini_summary(prob, stage, confidence, mode_label, age, sex, smoking, symptoms, history)
+        if summary:
+            st.markdown(f"""
+            <div style="background:#1a1d27;border-left:3px solid #3498db;border-radius:8px;
+                        padding:1rem 1.2rem;margin-top:0.5rem;color:#ccc;font-size:0.95rem;line-height:1.6">
+                <div style="font-size:0.75rem;color:#3498db;font-weight:bold;margin-bottom:0.4rem;letter-spacing:0.05em">
+                    AI CLINICAL SUMMARY
+                </div>
+                {summary}
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.caption("_AI summary unavailable — add GEMINI\\_API\\_KEY to Streamlit secrets to enable._")
 
 # ── Footer ────────────────────────────────────────────────────────────────────
 st.markdown("---")
