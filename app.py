@@ -14,11 +14,13 @@ def gemini_summary(prob, stage, confidence, mode_label, age, sex, smoking, sympt
             return None, "GEMINI_API_KEY not found in secrets"
         genai.configure(api_key=api_key)
         model = genai.GenerativeModel("gemini-3.1-flash-lite")
-        prompt = f"""You are a clinical AI assistant summarizing a lung adenocarcinoma staging model result.
-Write 2-3 concise sentences in a neutral clinical tone. Do not diagnose. Do not add any disclaimer or research note at the end.
+        prompt = f"""You are a clinical AI assistant writing a structured summary of a lung adenocarcinoma staging model result.
+Write 3-5 sentences. Explicitly reference the patient's age, sex, smoking history, symptoms, and medical history.
+Describe what the model found and what data modalities drove it. Use a confident but neutral clinical tone.
+Do not add any disclaimer, research note, or recommendation to see a doctor at the end.
 
-Patient: {age}-year-old {sex.lower()}, {smoking.lower()} smoker. Symptoms: {symptoms}. History: {history}.
-Model output: {stage} (P={prob:.3f}, {confidence*100:.1f}% confidence). Mode: {mode_label}.
+Patient profile: {age}-year-old {sex.lower()}, {smoking.lower()} smoker. Presenting symptoms: {symptoms}. Relevant history: {history}.
+Model output: {stage} (P(Stage III/IV) = {prob:.3f}, {confidence*100:.1f}% confidence). Analysis mode: {mode_label}.
 
 Summary:"""
         response = model.generate_content(prompt)
