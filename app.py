@@ -17,6 +17,7 @@ def gemini_summary(prob, stage, confidence, mode_label, age, sex, smoking, sympt
         prompt = f"""You are a clinical AI assistant writing a structured summary of a lung adenocarcinoma staging model result.
 Write 3-5 sentences. Explicitly reference the patient's age, sex, smoking history, symptoms, and medical history.
 Describe what the model found and what data modalities drove it. Use a confident but neutral clinical tone.
+Use the phrase "staging classification" rather than "diagnostic determination" or "diagnosis".
 Do not add any disclaimer, research note, or recommendation to see a doctor at the end.
 
 Patient profile: {age}-year-old {sex.lower()}, {smoking.lower()} smoker. Presenting symptoms: {symptoms}. Relevant history: {history}.
