@@ -31,7 +31,7 @@ Summary:"""
 
 st.set_page_config(
     page_title="LUAD Staging AI",
-    page_icon="🫁",
+    page_icon=None,
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -69,7 +69,7 @@ div[data-testid="stFileUploader"] { background: #1a1d27; border-radius: 8px; pad
 """, unsafe_allow_html=True)
 
 # ── Header ────────────────────────────────────────────────────────────────────
-st.markdown("# 🫁 LUAD Staging AI")
+st.markdown("# LUAD Staging AI")
 st.markdown("**Multimodal deep learning for lung adenocarcinoma staging** · CT scan + RNA-seq fusion")
 st.divider()
 
@@ -77,7 +77,7 @@ st.divider()
 col1, col2, col3 = st.columns([1, 1, 1], gap="large")
 
 with col1:
-    st.markdown("### 🩻 CT Scan <span style='font-size:0.75rem;color:#aaa'>(optional)</span>", unsafe_allow_html=True)
+    st.markdown("### CT Scan <span style='font-size:0.75rem;color:#aaa'>(optional)</span>", unsafe_allow_html=True)
     ct_file = st.file_uploader("Upload chest CT slice", type=["png", "jpg", "jpeg", "dcm"],
                                 label_visibility="collapsed")
     if ct_file:
@@ -93,7 +93,7 @@ with col1:
         pil_img = None
 
 with col2:
-    st.markdown("### 🧬 RNA-seq Expression <span style='font-size:0.75rem;color:#aaa'>(optional)</span>", unsafe_allow_html=True)
+    st.markdown("### RNA-seq Expression <span style='font-size:0.75rem;color:#aaa'>(optional)</span>", unsafe_allow_html=True)
     rna_file = st.file_uploader("Upload RNA-seq CSV", type=["csv", "tsv"],
                                  label_visibility="collapsed")
     rna_dict = {}
@@ -116,7 +116,7 @@ with col2:
         st.caption("Expected: ~18,514 genes matching TCGA/CPTAC naming (HGNC symbols)")
 
 with col3:
-    st.markdown("### 👤 Patient Info")
+    st.markdown("### Patient Info")
     age     = st.slider("Age", 30, 90, 62)
     sex     = st.radio("Sex", ["Male", "Female"], horizontal=True)
     smoking = st.selectbox("Smoking history", ["Never", "Former", "Current"])
@@ -139,7 +139,7 @@ st.divider()
 # ── Predict ───────────────────────────────────────────────────────────────────
 run_col, _ = st.columns([1, 3])
 with run_col:
-    predict_btn = st.button("🔬 Run Staging Prediction")
+    predict_btn = st.button("Run Staging Prediction")
 
 if predict_btn:
     if pil_img is None and not rna_dict:
@@ -149,13 +149,13 @@ if predict_btn:
         has_ct  = pil_img is not None
         has_rna = bool(rna_dict)
         if has_ct and has_rna:
-            mode_label = "🔬 Multimodal (CT + RNA-seq)"
+            mode_label = "Multimodal (CT + RNA-seq)"
             mode_color = "#3498db"
         elif has_ct:
-            mode_label = "🩻 Imaging Only (CT)"
+            mode_label = "Imaging Only (CT)"
             mode_color = "#9b59b6"
         else:
-            mode_label = "🧬 Genomic Only (RNA-seq)"
+            mode_label = "Genomic Only (RNA-seq)"
             mode_color = "#2ecc71"
 
         # Fill missing modality with blank inputs
@@ -186,10 +186,8 @@ if predict_btn:
         # ── Summary box ──────────────────────────────────────────────────────
         box_class = "late" if prob >= 0.5 else "early"
         color     = "#e74c3c" if prob >= 0.5 else "#2ecc71"
-        emoji     = "🔴" if prob >= 0.5 else "🟢"
         st.markdown(f"""
         <div class="result-box {box_class}">
-            <div style="font-size:3.5rem">{emoji}</div>
             <div style="font-size:1.8rem; font-weight:bold; color:{color}; margin:0.5rem 0">{stage}</div>
             <div style="font-size:1rem; color:#ccc">P(Stage III/IV) = <b style="color:{color}">{prob:.3f}</b> &nbsp;·&nbsp; Confidence: <b>{confidence*100:.1f}%</b></div>
         </div>
@@ -197,7 +195,7 @@ if predict_btn:
 
         if has_rna and missing > total * 0.3:
             st.markdown(f"""<div class="warning-box">
-            ⚠️ {missing:,} of {total:,} genes were missing from your RNA-seq file and were zero-filled.
+            {missing:,} of {total:,} genes were missing from your RNA-seq file and were zero-filled.
             Predictions may be less reliable. Ensure gene names use HGNC symbols (e.g. EGFR, KRAS, TP53).
             </div>""", unsafe_allow_html=True)
 
@@ -234,7 +232,7 @@ if predict_btn:
 
             if show_cam and viz1:
                 with viz1:
-                    st.markdown("#### 🔥 Grad-CAM Saliency (ResNet-18 layer4)")
+                    st.markdown("#### Grad-CAM Saliency (ResNet-18 layer4)")
                     fig, axes = plt.subplots(1, 2, figsize=(8, 4))
                     fig.patch.set_facecolor("#0f1117")
                     img_arr = np.array(pil_img.resize((224, 224)))
@@ -254,7 +252,7 @@ if predict_btn:
 
             if show_genes and viz2:
                 with viz2:
-                    st.markdown("#### 🧬 Top Genomic Dimensions (grad × input)")
+                    st.markdown("#### Top Genomic Dimensions (grad × input)")
                     top_idx  = np.argsort(np.abs(attribution))[::-1][:12]
                     top_vals = attribution[top_idx]
                     colors   = ["#e74c3c" if v > 0 else "#3498db" for v in top_vals]
