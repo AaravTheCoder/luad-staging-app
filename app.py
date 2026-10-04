@@ -6,6 +6,26 @@ import matplotlib.cm as cm
 from PIL import Image
 import io
 
+def gemini_summary(prob, stage, confidence, mode_label, age, sex, smoking, symptoms, history):
+    try:
+        import google.generativeai as genai
+        api_key = st.secrets.get("GEMINI_API_KEY", "")
+        if not api_key:
+            return None
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel("gemini-2.0-flash")
+        prompt = f"""You are a clinical AI assistant summarizing a lung adenocarcinoma staging model result for a research demo.
+Write 2-3 concise sentences in a neutral clinical tone. Do not diagnose. End with a note that this is for research only.
+
+Patient: {age}-year-old {sex.lower()}, {smoking.lower()} smoker. Symptoms: {symptoms}. History: {history}.
+Model output: {stage} (P={prob:.3f}, {confidence*100:.1f}% confidence). Mode: {mode_label}.
+
+Summary:"""
+        response = model.generate_content(prompt)
+        return response.text.strip()
+    except Exception:
+        return None
+
 st.set_page_config(
     page_title="LUAD Staging AI",
     page_icon="🫁",
@@ -177,6 +197,19 @@ if predict_btn:
             ⚠️ {missing:,} of {total:,} genes were missing from your RNA-seq file and were zero-filled.
             Predictions may be less reliable. Ensure gene names use HGNC symbols (e.g. EGFR, KRAS, TP53).
             </div>""", unsafe_allow_html=True)
+
+        # ── Gemini clinical summary ───────────────────────────────────────────
+        summary = gemini_summary(prob, stage, confidence, mode_label, age, sex, smoking, symptoms, history)
+        if summary:
+            st.markdown(f"""
+            <div style="background:#1a1d27;border-left:3px solid #3498db;border-radius:8px;
+                        padding:1rem 1.2rem;margin-top:1rem;color:#ccc;font-size:0.95rem;line-height:1.6">
+                <div style="font-size:0.75rem;color:#3498db;font-weight:bold;margin-bottom:0.4rem">
+                    AI CLINICAL SUMMARY (Gemini)
+                </div>
+                {summary}
+            </div>
+            """, unsafe_allow_html=True)
 
         st.markdown("---")
 
