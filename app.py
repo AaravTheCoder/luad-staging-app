@@ -11,7 +11,7 @@ def gemini_summary(prob, stage, confidence, mode_label, age, sex, smoking, sympt
         import google.generativeai as genai
         api_key = st.secrets.get("GEMINI_API_KEY", "")
         if not api_key:
-            return None
+            return None, "GEMINI_API_KEY not found in secrets"
         genai.configure(api_key=api_key)
         model = genai.GenerativeModel("gemini-2.0-flash")
         prompt = f"""You are a clinical AI assistant summarizing a lung adenocarcinoma staging model result for a research demo.
@@ -22,9 +22,9 @@ Model output: {stage} (P={prob:.3f}, {confidence*100:.1f}% confidence). Mode: {m
 
 Summary:"""
         response = model.generate_content(prompt)
-        return response.text.strip()
-    except Exception:
-        return None
+        return response.text.strip(), None
+    except Exception as e:
+        return None, str(e)
 
 st.set_page_config(
     page_title="LUAD Staging AI",
@@ -272,7 +272,7 @@ if predict_btn:
         # ── Gemini clinical summary ───────────────────────────────────────────
         st.markdown("---")
         with st.spinner("Generating AI clinical summary..."):
-            summary = gemini_summary(prob, stage, confidence, mode_label, age, sex, smoking, symptoms, history)
+            summary, err = gemini_summary(prob, stage, confidence, mode_label, age, sex, smoking, symptoms, history)
         if summary:
             st.markdown(f"""
             <div style="background:#1a1d27;border-left:3px solid #3498db;border-radius:8px;
@@ -283,8 +283,8 @@ if predict_btn:
                 {summary}
             </div>
             """, unsafe_allow_html=True)
-        else:
-            st.caption("_AI summary unavailable — add GEMINI\\_API\\_KEY to Streamlit secrets to enable._")
+        elif err:
+            st.caption(f"_AI summary unavailable: {err}_")
 
 # ── Footer ────────────────────────────────────────────────────────────────────
 st.markdown("---")
