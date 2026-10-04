@@ -47,7 +47,7 @@ div[data-testid="stFileUploader"] { background: #1a1d27; border-radius: 8px; pad
 
 # ── Header ────────────────────────────────────────────────────────────────────
 st.markdown("# 🫁 LUAD Staging AI")
-st.markdown("**Multimodal deep learning for lung adenocarcinoma staging** · CT scan + RNA-seq fusion · Regeneron STS")
+st.markdown("**Multimodal deep learning for lung adenocarcinoma staging** · CT scan + RNA-seq fusion")
 st.divider()
 
 # ── Inputs ────────────────────────────────────────────────────────────────────
@@ -252,8 +252,8 @@ if predict_btn:
         # ── Disclaimer ───────────────────────────────────────────────────────
         st.markdown("---")
         st.markdown("""<div class="warning-box">
-        ⚠️ <b>Research Use Only.</b> This tool is a proof-of-concept built for the Regeneron Science Talent Search.
-        It is NOT a clinical diagnostic tool and should never be used to make medical decisions.
+        ⚠️ <b>Research Use Only.</b> This tool is a proof-of-concept and is NOT a clinical diagnostic tool.
+        It should never be used to make medical decisions.
         Always consult a qualified oncologist for diagnosis and staging.
         </div>""", unsafe_allow_html=True)
 
@@ -261,8 +261,7 @@ if predict_btn:
 st.markdown("---")
 st.markdown("""
 <div style="text-align:center; color:#666; font-size:0.85rem">
-Regeneron Science Talent Search &nbsp;·&nbsp;
-<a href="https://github.com/AaravTheCoder/multimodal-lung-adenocarcinoma-diagnoser" style="color:#3498db">GitHub</a>
+<a href="https://github.com/AaravTheCoder/luad-staging-app" style="color:#3498db">GitHub</a>
 &nbsp;·&nbsp; ResNet-18 (RadiologyNET) + ComBat + PCA · 3 cohorts · 5×5-fold CV
 </div>
 """, unsafe_allow_html=True)
